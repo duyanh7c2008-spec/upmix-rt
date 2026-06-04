@@ -4,8 +4,6 @@ on: [push, workflow_dispatch]
 jobs:
   build-windows:
     runs-on: windows-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -32,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: UpmixRT-Windows-VST3
-          path: build/plugin/UpmixRT_artefacts/Release/VST3/
+          path: build/**/*.vst3
