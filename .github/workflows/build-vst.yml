@@ -12,14 +12,24 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # 1. Set up Ninja, which is explicitly required by your build docs
+      - name: Set up Ninja
+        uses: ashutoshvarma/setup-ninja@v1.1.1
+        with:
+          version: 1.10.2
+
+      # 2. Use the default preset as dictated by the README
       - name: Configure CMake
-        run: cmake -B build -G "Visual Studio 17 2022" -A x64
+        run: cmake --preset default
 
+      # 3. Build using the preset
       - name: Build plugin
-        run: cmake --build build --config Release
+        run: cmake --build --preset default --config Release
 
+      # 4. Upload the resulting VST3 artifact
       - name: Upload VST3 artifact
         uses: actions/upload-artifact@v4
         with:
           name: UpmixRT-VST3
-          path: build/**/VST3/*.vst3
+          # Targets the typical JUCE/CMake build output directory for VST3
+          path: build/UpmixRT_artefacts/Release/VST3/*.vst3
