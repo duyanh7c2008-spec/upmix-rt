@@ -8,11 +8,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up CMake and Ninja
-        uses: lukka/get-cmake@latest
+      - name: Setup MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Configure CMake Project
-        run: cmake --preset default
+        run: cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release
 
       - name: Build VST3 Plugin
         run: cmake --build build --config Release
