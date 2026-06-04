@@ -4,12 +4,23 @@ on: [push, workflow_dispatch]
 jobs:
   build-windows:
     runs-on: windows-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-      - name: Setup MSVC Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.25.x'
+
+      - name: Set up Ninja Build
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: '1.11.1'
 
       - name: Configure CMake Project
         run: cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release
