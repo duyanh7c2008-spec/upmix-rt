@@ -6,30 +6,28 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    # Explicitly using windows-2025 to align with the upcoming runner update
+    runs-on: windows-2025
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 1. Set up Ninja, which is explicitly required by your build docs
-      - name: Set up Ninja
-        uses: ashutoshvarma/setup-ninja@v1.1.1
-        with:
-          version: 1.10.2
+      # Uses a highly reliable, verified action to set up CMake and Ninja
+      - name: Set up CMake and Ninja
+        uses: lukka/get-cmake@latest
 
-      # 2. Use the default preset as dictated by the README
+      # Use the default preset as dictated by your README
       - name: Configure CMake
         run: cmake --preset default
 
-      # 3. Build using the preset
+      # Build using the preset
       - name: Build plugin
         run: cmake --build --preset default --config Release
 
-      # 4. Upload the resulting VST3 artifact
+      # Upload the resulting VST3 artifact
       - name: Upload VST3 artifact
         uses: actions/upload-artifact@v4
         with:
           name: UpmixRT-VST3
-          # Targets the typical JUCE/CMake build output directory for VST3
           path: build/UpmixRT_artefacts/Release/VST3/*.vst3
