@@ -5,7 +5,6 @@ on:
   workflow_dispatch:
 
 env:
-  # Clears the Node.js 20 deprecation warning and forces the modern runtime
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
@@ -24,18 +23,18 @@ jobs:
         with:
           arch: x64
 
+      # 1. We force CMAKE_BUILD_TYPE to Release right here during configuration
       - name: Configure CMake
-        run: cmake --preset default
+        run: cmake --preset default -DCMAKE_BUILD_TYPE=Release
 
-      # Force CMake to build the proper Release configuration
+      # 2. We explicitly tell the build command to compile the Release target
       - name: Build plugin
         run: cmake --build build --config Release
 
-      # Upload the resulting VST3 artifact using a recursive wildcard search
+      # 3. This scans the build directory recursively to grab the final folder
       - name: Upload VST3 artifact
         uses: actions/upload-artifact@v4
         with:
           name: UpmixRT-VST3
-          # Using ** ensures it grabs the .vst3 folder regardless of the Debug/Release path
           path: build/**/*.vst3/
           include-hidden-files: true
