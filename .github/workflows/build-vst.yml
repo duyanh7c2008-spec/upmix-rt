@@ -6,26 +6,31 @@ on:
 
 jobs:
   build:
-    # Explicitly using windows-2025 to align with the upcoming runner update
     runs-on: windows-2025
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # Uses a highly reliable, verified action to set up CMake and Ninja
+      # 1. Install CMake and Ninja
       - name: Set up CMake and Ninja
         uses: lukka/get-cmake@latest
 
-      # Use the default preset as dictated by your README
+      # 2. Force the environment to use Visual Studio's MSVC compiler (x64)
+      - name: Set up MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      # 3. Configure CMake (Now Ninja will safely use cl.exe instead of gcc)
       - name: Configure CMake
         run: cmake --preset default
 
-      # Build using the preset
+      # 4. Build using the preset
       - name: Build plugin
         run: cmake --build --preset default --config Release
 
-      # Upload the resulting VST3 artifact
+      # 5. Upload the resulting VST3 artifact
       - name: Upload VST3 artifact
         uses: actions/upload-artifact@v4
         with:
