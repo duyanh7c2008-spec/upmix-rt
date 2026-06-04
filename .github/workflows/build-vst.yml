@@ -4,6 +4,10 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  # Clears the Node.js 20 deprecation warning and forces the modern runtime
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build:
     runs-on: windows-2025
@@ -12,27 +16,26 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 1. Install CMake and Ninja
       - name: Set up CMake and Ninja
         uses: lukka/get-cmake@latest
 
-      # 2. Force the environment to use Visual Studio's MSVC compiler (x64)
       - name: Set up MSVC Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
 
-      # 3. Configure CMake (Now Ninja will safely use cl.exe instead of gcc)
       - name: Configure CMake
         run: cmake --preset default
 
-      # 4. Build using the preset
+      # Force CMake to build the proper Release configuration
       - name: Build plugin
-        run: cmake --build --preset default --config Release
+        run: cmake --build build --config Release
 
-      # 5. Upload the resulting VST3 artifact
+      # Upload the resulting VST3 artifact using a recursive wildcard search
       - name: Upload VST3 artifact
         uses: actions/upload-artifact@v4
         with:
           name: UpmixRT-VST3
-          path: build/UpmixRT_artefacts/Release/VST3/*.vst3
+          # Using ** ensures it grabs the .vst3 folder regardless of the Debug/Release path
+          path: build/**/*.vst3/
+          include-hidden-files: true
